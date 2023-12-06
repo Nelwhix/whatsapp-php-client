@@ -1,0 +1,23 @@
+{
+    "name": "nelwhix/whatsapp-php-client",
+    "description": "client library for whatsapp web multidevice api",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Nelwhix\\WhatsappPhpClient\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Nelson Isioma",
+            "email": "58360242+Nelwhix@users.noreply.github.com"
+        }
+    ],
+    "require-dev": {
+        "phpstan/phpstan": "^1.10"
+    },
+  "require": {
+    "ext-pdo": "*"
+  }
+}
