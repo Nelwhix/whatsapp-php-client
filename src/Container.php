@@ -10,15 +10,19 @@ class Container
     private \PDO $db;
     private $log;
     public $dbErrorHandler;
+    private string $dialect;
 
 
-    public function __construct(string $dsn, ?string $log)
+    public function __construct(string $dialect, string $dsn, ?string $log)
     {
         $this->db = new PDO($dsn);
         $this->log = $log;
+        $this->dialect = $dialect;
+        $this->upgrade();
     }
 
     public function upgrade() {
+        $version = $this->getVersion();
 
     }
 
