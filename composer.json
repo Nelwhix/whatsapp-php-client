@@ -15,9 +15,16 @@
         }
     ],
     "require-dev": {
-        "phpstan/phpstan": "^1.10"
+        "phpstan/phpstan": "^1.10",
+        "pestphp/pest": "^2.28"
     },
   "require": {
-    "ext-pdo": "*"
-  }
+    "ext-pdo": "*",
+        "monolog/monolog": "^3.5"
+  },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
+    }
 }
