@@ -5,9 +5,12 @@ namespace Nelwhix\WhatsappPhpClient;
 // Container is a wrapper for a SQL database that could contain multiple client sessions
 use Monolog\Handler\StreamHandler;
 use Monolog\Level;
-use PDO;
-use Nelwhix\WhatsappPhpClient\Utils\Utils;
 use Monolog\Logger;
+use Nelwhix\WhatsappPhpClient\DTO\Device;
+use Nelwhix\WhatsappPhpClient\utils\keys\KeyPair;
+use Nelwhix\WhatsappPhpClient\utils\keys\Keys;
+use Nelwhix\WhatsappPhpClient\Utils\Utils;
+use PDO;
 
 class Container
 {
@@ -31,7 +34,7 @@ class Container
         $this->log = $log;
 
         if($this->log === null) {
-            $this->log = new Logger('whatsapp_php_logger');
+            $this->log = new Logger('container_logger');
             $this->log->pushHandler(new StreamHandler('php://stdout', Level::Debug));
         }
 
@@ -266,13 +269,43 @@ SQL;
         $this->db->exec("UPDATE client_device SET jid=REPLACE(jid, '.0', '')");
     }
 
-    public function get
+    const getAllDevicesQuery = <<<SQL
+    SELECT jid, registration_id, noise_key, identity_key,
+       signed_pre_key, signed_pre_key_id, signed_pre_key_sig,
+       adv_key, adv_details, adv_account_sig, adv_account_sig_key, adv_device_sig,
+       platform, business_name, push_name
+FROM client_device
+SQL;
+
+
+    public function getAllDevices(): array {
+        $stmt = $this->db->prepare(self::getAllDevicesQuery);
+        $stmt->setFetchMode(PDO::FETCH_CLASS, Device::class);
+        $stmt->execute();
+        $devices = $stmt->fetchAll();
+
+        foreach($devices as $device) {
+            $this->log->info("device name: " . $device->jid);
+        }
+
+        return $devices;
+    }
+
+    // NewDevice creates a new device in this database.
+    //
+    // No data is actually stored before Save is called. However, the pairing process will automatically
+    // call Save after a successful pairing, so you most likely don't need to call it yourself.
+    public function newDevice(): \Nelwhix\WhatsappPhpClient\Device {
+        $device = new \Nelwhix\WhatsappPhpClient\Device($this->log, $this, $this->dbErrorHandler, new KeyPair(), new KeyPair(), Utils::generateUint32(), random_bytes(32));
+        $device->signedPreKey = $device->identityKey->createSignedPreKey(1);
+        return $device;
+    }
 
     public function getFirstDevice() {
         $devices = $this->getAllDevices();
 
         if (count($devices) === 0) {
-            return $this->getNewDevice();
+            return $this->newDevice();
         }
 
         return $devices[0];

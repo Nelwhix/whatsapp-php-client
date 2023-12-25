@@ -20,7 +20,9 @@
     },
   "require": {
     "ext-pdo": "*",
-        "monolog/monolog": "^3.5"
+        "monolog/monolog": "^3.5",
+        "paragonie/easy-ecc": "^1.0",
+        "guzzlehttp/guzzle": "^7.8"
   },
     "config": {
         "allow-plugins": {

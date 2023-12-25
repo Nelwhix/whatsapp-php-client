@@ -13,4 +13,9 @@ class Utils
 
      die(5);
  }
+
+ public static function generateUint32(): int
+ {
+     return mt_rand(0, 0xFFFFFFFF);
+ }
 }
